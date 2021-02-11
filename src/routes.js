@@ -11,6 +11,7 @@ import ResetPassword from "./components/auth/login/resetPassword";
 // Pages
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import Memberships from "./pages/Memberships";
 import Member from "./pages/Member";
 import Members from "./pages/Members";
 
@@ -85,6 +86,11 @@ function Routes(props) {
               exact
               path="/dashboard"
               render={() => <Dashboard {...props} />}
+            />
+            <Route
+              exact
+              path="/memberships"
+              render={() => <Memberships {...props} />}
             />
             <Route
               exact

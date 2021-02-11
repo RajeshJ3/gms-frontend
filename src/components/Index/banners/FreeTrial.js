@@ -33,7 +33,7 @@ export default function Features() {
             Get 2 Months <b>FREE</b>!
           </Typography>
           <Typography
-            variant="subtitle"
+            variant="body2"
             color="textSecondary"
             className={classes.description}
           >

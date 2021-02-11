@@ -39,14 +39,10 @@ export default function AddButton(props) {
   const [open, setOpen] = React.useState(false);
   const [batch, setBatch] = React.useState("");
   const [member, setMember] = React.useState();
-  const [name, setName] = React.useState("Rajesh Joshi");
   const [membership, setMembership] = React.useState();
   const [subscriptionFrom, setSubscriptionFrom] = React.useState();
   const [subscriptionTill, setSubscriptionTill] = React.useState();
   const [amount, setAmount] = React.useState();
-  const [image, setImage] = React.useState(
-    "https://material-ui.com/static/images/avatar/2.jpg"
-  );
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -134,8 +130,8 @@ export default function AddButton(props) {
               <center>
                 <Avatar
                   style={{ marginBottom: member ? "10px" : 0 }}
-                  alt={name}
-                  src={image}
+                  alt="Rajesh"
+                  src="https://material-ui.com/static/images/avatar/2.jpg"
                 />
               </center>
             ) : null}

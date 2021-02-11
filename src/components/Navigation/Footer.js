@@ -96,7 +96,7 @@ export default function Footer() {
         <Grid item xs={12} className={clsx(classes.grid, classes.link)}>
           &#169; {date.getFullYear()}{" "}
           <Link className={clsx(classes.link, classes.copyright)} to="/">
-            Azuuk
+            GMS
           </Link>
         </Grid>
       </Container>

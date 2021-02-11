@@ -129,7 +129,7 @@ export default function Navigation(props) {
             component={Link}
             to="/dashboard"
           >
-            GYM
+            GMS
           </Typography>
         </Toolbar>
       </AppBar>
@@ -155,7 +155,7 @@ export default function Navigation(props) {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
-          <ListItem button component={Link} to="/gym" onClick={handleDrawerClose}>
+          <ListItem button component={Link} to="/memberships" onClick={handleDrawerClose}>
             <ListItemIcon>
               <FitnessCenter />
             </ListItemIcon>

@@ -148,7 +148,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function StickyHeadTable(props) {
   const theme = useTheme();
-  const [columns, setColumns] = React.useState([
+  const columns = [
     {
       id: "image",
       label: "",
@@ -184,7 +184,7 @@ export default function StickyHeadTable(props) {
       padding: "5px 10px 5px 0px",
       minWidth: "100px",
     },
-  ]);
+  ];
 
   const classes = useStyles();
   const [page, setPage] = React.useState(0);

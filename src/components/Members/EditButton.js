@@ -35,9 +35,6 @@ export default function AddButton(props) {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
-  const [image, setImage] = React.useState(
-    "https://material-ui.com/static/images/avatar/2.jpg"
-  );
   const [name, setName] = React.useState("Rajesh Joshi");
   const [email, setEmail] = React.useState("joshirajesh448@gmail.com");
   const [mobile, setMobile] = React.useState("9876543210");
@@ -83,7 +80,7 @@ export default function AddButton(props) {
         <DialogTitle id="form-dialog-title">Edit member profile</DialogTitle>
         <DialogContent className={classes.dialog}>
           <div className={classes.imageWrapper}>
-            <Avatar alt={name} src={image} />
+            <Avatar alt={name} src="https://material-ui.com/static/images/avatar/2.jpg" />
             <Button variant="outlined" size="small" color="primary">
               Upload
             </Button>

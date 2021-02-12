@@ -19,25 +19,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MemberInfo() {
+export default function MemberInfo(props) {
   const classes = useStyles();
 
   const info = [
     {
       key: "Name",
-      value: "Rajesh Joshi",
+      value: props.name,
     },
     {
       key: "Email",
-      value: "joshirajesh448@gmail.com",
+      value: props.email,
     },
     {
       key: "Mobile",
-      value: "9917531008",
+      value: props.mobile ? props.mobile : "-",
     },
     {
       key: "Batch",
-      value: "Morning",
+      value: props.batch_title ? props.batch_title : "-",
     },
   ];
 

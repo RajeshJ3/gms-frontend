@@ -96,7 +96,7 @@ function Routes(props) {
             <Route
               exact
               path="/gym"
-              render={() => <GYM {...props} />}
+              render={(d) => <GYM {...d} {...props} />}
             />
             <Route
               exact
@@ -106,7 +106,7 @@ function Routes(props) {
             <Route
               exact
               path="/members/:id"
-              render={() => <Member {...props} />}
+              render={(d) => <Member {...d} {...props} />}
             />
 
             <Route path="*" component={NotFoundComponent} />

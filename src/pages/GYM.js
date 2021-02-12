@@ -19,7 +19,6 @@ export default function Index(props) {
       <BatchList />
       <Divider />
       <Members {...props} />
-
     </>
   ) : (
     <Progress />

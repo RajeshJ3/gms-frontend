@@ -14,8 +14,8 @@ import axios from "axios";
 import { DOMAIN, getToken } from "../../store/utility";
 import Progress from "../errors/Progress";
 
-function createData(image, name, amount, batch, valid_from, valid_till) {
-  return { image, name, amount, batch, valid_from, valid_till };
+function createData(id, image, name, amount, batch, valid_from, valid_till) {
+  return { id, image, name, amount, batch, valid_from, valid_till };
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,7 +75,7 @@ export default function StickyHeadTable(props) {
           align: "right",
           padding: "5px 5px 5px 0px",
           component: Link,
-          link: "/members/9",
+          link: "/members",
         },
         {
           id: "name",
@@ -84,7 +84,7 @@ export default function StickyHeadTable(props) {
           fontWeight: "bold",
           minWidth: "120px",
           component: Link,
-          link: "/members/9",
+          link: "/members",
         },
       ];
       setColumns([...more, ...columns]);
@@ -96,12 +96,14 @@ export default function StickyHeadTable(props) {
     axios({
       method: "GET",
       url: `${DOMAIN}/members/subscription/`,
+      params: {member: props.memberId},
       headers: { Authorization: `Token ${getToken}` },
     })
       .then((res) => {
         let data = [];
         data = res.data.output.map((i) =>
           createData(
+            i.member,
             i.member_image,
             i.member_name,
             i.amount,
@@ -117,7 +119,7 @@ export default function StickyHeadTable(props) {
         setLoading(false);
         console.log(err);
       });
-  }, []);
+  }, [props.memberId]);
 
   const classes = useStyles();
 
@@ -163,7 +165,7 @@ export default function StickyHeadTable(props) {
                             fontWeight: column.fontWeight,
                           }}
                         >
-                          <Link to={column.link ? column.link : "#"}>
+                          <Link to={column.link ? `${column.link}/${row['id']}` : "#"}>
                             {column.format && typeof value === "number"
                               ? column.format(value)
                               : value}
@@ -177,7 +179,7 @@ export default function StickyHeadTable(props) {
                         >
                           <Avatar
                             component={column.component}
-                            to={column.link}
+                            to={column.link ? `${column.link}/${row['id']}` : "#"}
                             alt={row["name"]}
                             src={row[column.id]}
                           />

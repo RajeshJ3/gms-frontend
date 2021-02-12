@@ -15,8 +15,8 @@ import axios from "axios";
 import { DOMAIN, getToken } from "../../store/utility";
 import Progress from "../errors/Progress";
 
-function createData(image, name, batch, activeSubscription, joined_date) {
-  return { image, name, batch, activeSubscription, joined_date };
+function createData(id, image, name, batch, activeSubscription, joined_date) {
+  return {id, image, name, batch, activeSubscription, joined_date };
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ export default function StickyHeadTable(props) {
       align: "right",
       padding: "5px 5px 5px 0px",
       component: Link,
-      link: "/members/9",
+      link: "/members",
     },
     {
       id: "name",
@@ -58,7 +58,7 @@ export default function StickyHeadTable(props) {
       fontWeight: "bold",
       minWidth: "120px",
       component: Link,
-      link: "/members/9",
+      link: "/members",
     },
     {
       id: "batch",
@@ -125,6 +125,7 @@ export default function StickyHeadTable(props) {
           )
           .map((i) =>
             createData(
+              i.id,
               i.image,
               i.name,
               i.batch_title,
@@ -183,7 +184,7 @@ export default function StickyHeadTable(props) {
                             fontWeight: column.fontWeight,
                           }}
                         >
-                          <Link to={column.link ? column.link : "#"}>
+                          <Link to={column.link ? `${column.link}/${row['id']}` : "#"}>
                             {typeof value === "boolean" ? (
                               value ? (
                                 <CheckCircle className={classes.check} />

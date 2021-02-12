@@ -8,16 +8,20 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    position: "relative",
+    minHeight: "150px",
+  },
   title: {
     fontSize: "23px",
     [theme.breakpoints.down("sm")]: {
-      fontSize: "17px",
+      fontSize: "15px",
     },
   },
-  pos: {
-    marginBottom: 12,
-  },
+  bottom:{
+    position: "absolute",
+    bottom: 0
+  }
 }));
 
 export default function CustomCard(props) {
@@ -29,11 +33,11 @@ export default function CustomCard(props) {
         <Typography variant="h5" component="h2" className={classes.title}>
           {props.icon} {props.title}
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
+        <Typography color="textSecondary">
           {props.value}
         </Typography>
       </CardContent>
-      <CardActions>
+      <CardActions className={classes.bottom}>
         <Button
           variant="contained"
           color="primary"

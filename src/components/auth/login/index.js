@@ -67,7 +67,7 @@ function LogIn(props) {
       })
       .then((res) => {
         localStorage.setItem("token", res.data.key)
-        localStorage.setItem("user", JSON.stringify(res.data.user))
+        localStorage.setItem("user", JSON.stringify(res.data))
         setSuccess(true);
         setLoading(false);
       })

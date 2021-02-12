@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import EditButton from '../Members/EditButton'
+import EditGYM from '../GYM/EditButton'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +33,7 @@ export default function Title(props) {
         ) : null}
         {props.title}
         {
-          props.edit ? (<EditButton />) : null
+          props.edit ? props.gym ? (<EditGYM />) : (<EditButton />) : null
         }
       </Typography>
     </>

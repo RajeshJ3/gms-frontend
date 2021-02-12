@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Memberships from "./pages/Memberships";
 import Member from "./pages/Member";
 import Members from "./pages/Members";
+import GYM from "./pages/GYM";
 
 // Nav
 import Navigation from "./components/Navigation/Index";
@@ -91,6 +92,11 @@ function Routes(props) {
               exact
               path="/memberships"
               render={() => <Memberships {...props} />}
+            />
+            <Route
+              exact
+              path="/gym"
+              render={() => <GYM {...props} />}
             />
             <Route
               exact

@@ -7,6 +7,8 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import axios from "axios";
+import { DOMAIN, getToken } from "../../store/utility";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -27,14 +29,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EditGYM(props) {
   const classes = useStyles();
-
   const [open, setOpen] = React.useState(false);
-  const [name, setName] = React.useState("Rajesh's GYM");
-  const [email, setEmail] = React.useState("joshirajesh448@gmail.com");
-  const [mobile, setMobile] = React.useState("9876543210");
-  const [address, setAddress] = React.useState(
-    "Priyadarshini vihar, Gair Vaishali, Bithoriya no.1, Kusumkhera, Haldwani"
-  );
+  const [loading, setLoading] = React.useState(false);
+  const [name, setName] = React.useState("");
+  const [address, setAddress] = React.useState("");
+
+  React.useEffect(() => {
+    setName(props.name);
+    setAddress(props.address);
+  }, [props.name, props.address]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -42,6 +45,27 @@ export default function EditGYM(props) {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    axios({
+      method: "PATCH",
+      url: `${DOMAIN}/gyms/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { id: props.id },
+      data: {
+        name: name,
+        address: address,
+      },
+    })
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
 
   return (
@@ -72,26 +96,6 @@ export default function EditGYM(props) {
           />
           <TextField
             margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            autoComplete={false}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="mobile"
-            label="Mobile"
-            type="number"
-            fullWidth
-            autoComplete={false}
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-          />
-          <TextField
-            margin="dense"
             id="address"
             label="Address"
             type="text"
@@ -107,8 +111,8 @@ export default function EditGYM(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
-            Save
+          <Button color="primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Saving" : "Save"}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,42 +1,25 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import { Add } from "@material-ui/icons";
-import {
-  CardContent,
-  Typography,
-  Button,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import TextField from "@material-ui/core/TextField";
+import { Edit } from "@material-ui/icons";
 import axios from "axios";
-import { DOMAIN, getToken, getGymId } from "../../store/utility";
+import { DOMAIN, getToken } from "../../store/utility";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: "#f9f9f9",
-    cursor: "pointer",
-    userSelect: "none",
-    [theme.breakpoints.up("sm")]: {
-      minHeight: "87px",
-    },
-  },
-  icon: {
-    fontSize: "25px",
-    marginBottom: "-5px",
-  },
-}));
-
-export default function RecipeReviewCard() {
-  const classes = useStyles();
+export default function AlertDialog(props) {
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [amount, setAmount] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
 
+  React.useEffect(() => {
+    setTitle(props.title);
+    setAmount(props.amount);
+  },[props.title, props.amount])
+  
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -45,17 +28,16 @@ export default function RecipeReviewCard() {
     setOpen(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     setLoading(true);
     axios({
-      method: "POST",
+      method: "PATCH",
       url: `${DOMAIN}/gyms/memberships/`,
       headers: { Authorization: `Token ${getToken}` },
+      params: { id: props.id },
       data: {
         title: title,
         price: amount,
-        gym: getGymId,
       },
     })
       .then((res) => {
@@ -68,22 +50,17 @@ export default function RecipeReviewCard() {
   };
 
   return (
-    <>
-      <Card className={classes.root}>
-        <CardContent onClick={handleClickOpen}>
-          <Typography variant="h6" align="center">
-            <Add className={classes.icon} /> Add Membership
-          </Typography>
-        </CardContent>
-      </Card>
+    <div>
+      <Edit color="primary" onClick={handleClickOpen} />
       <Dialog
         open={open}
         onClose={handleClose}
-        aria-labelledby="form-dialog-title"
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="form-dialog-title">New Membership</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit {props.title}</DialogTitle>
         <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-          <DialogContent className={classes.dialog}>
+          <DialogContent>
             <TextField
               margin="dense"
               id="title"
@@ -115,6 +92,6 @@ export default function RecipeReviewCard() {
           </DialogActions>
         </form>
       </Dialog>
-    </>
+    </div>
   );
 }

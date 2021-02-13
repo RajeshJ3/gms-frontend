@@ -8,8 +8,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Avatar from "@material-ui/core/Avatar";
-import axios from "axios";
-import { DOMAIN, getToken, getGymId } from "../../store/utility";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -31,51 +29,16 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "12px",
     bottom: "0px",
   },
-  input: {
-    display: "none",
-  },
 }));
 
 export default function AddButton(props) {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [mobile, setMobile] = React.useState("");
-  const [batch, setBatch] = React.useState("");
-  const [batches, setBatches] = React.useState([]);
-  const [image, setImage] = React.useState();
-
-  React.useEffect(() => {
-    setName(props.name);
-    setEmail(props.email);
-    setMobile(props.phone);
-    setBatch(props.batch_name);
-    setImage(props.image);
-  }, [props.name, props.email, props.phone, props.batch_name, props.image]);
-
-  React.useEffect(() => {
-    axios({
-      method: "GET",
-      url: `${DOMAIN}/gyms/batches/`,
-      headers: { Authorization: `Token ${getToken}` },
-      params: { gym: getGymId },
-    })
-      .then((res) => {
-        let temp = res.data.output.map((i) => ({
-          value: i.id,
-          label: i.title,
-        }));
-        setBatches([{ value: -1, label: "Select.." }, ...temp]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
-  }, []);
+  const [name, setName] = React.useState("Rajesh Joshi");
+  const [email, setEmail] = React.useState("joshirajesh448@gmail.com");
+  const [mobile, setMobile] = React.useState("9876543210");
+  const [batch, setBatch] = React.useState("morning");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,34 +48,20 @@ export default function AddButton(props) {
     setOpen(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let formData = new FormData();
-    if (typeof image === "object") {
-      formData.append("image", image[0]);
-    }
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("phone", mobile);
-    if (typeof batch === "number") {
-      formData.append("batch", batch);
-    }
-    axios
-      .patch(`${DOMAIN}/members/`, formData, {
-        headers: {
-          Authorization: `Token ${getToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-        params: { id: props.id },
-      })
-      .then((res) => {
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.log(JSON.parse(err.request.response));
-        setLoading(false);
-      });
-  };
+  const batches = [
+    {
+      value: "morning",
+      label: "Morning",
+    },
+    {
+      value: "noon",
+      label: "Noon",
+    },
+    {
+      value: "evening",
+      label: "Evening",
+    },
+  ];
 
   return (
     <>
@@ -131,40 +80,18 @@ export default function AddButton(props) {
         <DialogTitle id="form-dialog-title">Edit member profile</DialogTitle>
         <DialogContent className={classes.dialog}>
           <div className={classes.imageWrapper}>
-            <Avatar
-              alt={name}
-              src={
-                typeof image === "object"
-                  ? image.length && URL.createObjectURL(image[0])
-                  : image
-              }
-            />
-            <input
-              accept="image/*"
-              className={classes.input}
-              id="contained-button-file"
-              multiple
-              type="file"
-              onChange={(e) => setImage(e.target.files)}
-            />
-            <label htmlFor="contained-button-file">
-              <Button
-                variant="outlined"
-                size="small"
-                color="primary"
-                component="span"
-              >
-                Upload
-              </Button>
-            </label>
+            <Avatar alt={name} src="https://material-ui.com/static/images/avatar/2.jpg" />
+            <Button variant="outlined" size="small" color="primary">
+              Upload
+            </Button>
           </div>
-
           <TextField
             margin="dense"
             id="name"
             label="Name"
             type="text"
             fullWidth
+            autoComplete={false}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -174,6 +101,7 @@ export default function AddButton(props) {
             label="Email Address"
             type="email"
             fullWidth
+            autoComplete={false}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -183,6 +111,7 @@ export default function AddButton(props) {
             label="Mobile"
             type="number"
             fullWidth
+            autoComplete={false}
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
           />
@@ -209,8 +138,8 @@ export default function AddButton(props) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? "Saving" : "Save"}
+          <Button onClick={handleClose} color="primary">
+            Save
           </Button>
         </DialogActions>
       </Dialog>

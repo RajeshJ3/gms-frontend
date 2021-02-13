@@ -1,8 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
-import EditButton from '../Members/EditButton'
-import EditGYM from '../GYM/EditButton'
+import EditButton from "./EditButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,15 +25,13 @@ export default function Title(props) {
       <Typography className={classes.root} variant="h5">
         {props.avatarUrl ? (
           <Avatar
-            alt="Rajesh Joshi"
+            alt={classes.name}
             className={classes.avatar}
             src={props.avatarUrl}
           />
         ) : null}
         {props.title}
-        {
-          props.edit ? props.gym ? (<EditGYM {...props} />) : (<EditButton />) : null
-        }
+        {props.edit ? <EditButton {...props} /> : null}
       </Typography>
     </>
   );

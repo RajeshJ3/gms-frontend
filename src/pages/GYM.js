@@ -10,7 +10,6 @@ import BatchList from "../components/GYM/Batches/CardList";
 export default function Index(props) {
   return props.isAuthenticated ? (
     <>
-      <Title title="Rajesh's GYM" edit={true} gym={true} />
       <GYMInfo />
       <Divider />
       <Memberships {...props} />

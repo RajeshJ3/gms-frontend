@@ -3,7 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
-import { Edit, Delete } from "@material-ui/icons";
+import DeleteBatch from './DeleteBatch'
+import EditBatch from './EditBatch'
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -18,10 +19,10 @@ export default function RecipeReviewCard(props) {
         action={
           <>
             <IconButton aria-label="settings">
-              <Edit color="primary" />
+              <EditBatch {...props} />
             </IconButton>
             <IconButton aria-label="add to favorites">
-              <Delete style={{ color: "red" }} />
+            <DeleteBatch {...props} />
             </IconButton>
           </>
         }

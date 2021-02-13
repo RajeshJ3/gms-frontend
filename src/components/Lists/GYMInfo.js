@@ -5,6 +5,10 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Container, Typography, Divider } from "@material-ui/core";
+import Title from "../Typographies/Title";
+import axios from "axios";
+import { DOMAIN, getToken, getGymId } from "../../store/utility";
+import Progress from "../errors/Progress";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,57 +34,81 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GYMInfo() {
   const classes = useStyles();
+  const [loading, setLoading] = React.useState(true);
+  const [data, setData] = React.useState({});
+  const [info, setInfo] = React.useState([]);
 
-  const info = [
-    {
-      key: "Name",
-      value: "Rajesh's GYM",
-    },
-    {
-      key: "Email",
-      value: "joshirajesh448@gmail.com",
-    },
-    {
-      key: "Mobile",
-      value: "9917531008",
-    },
-    {
-      key: "Batch",
-      value: "Morning",
-    },
-    {
-      key: "Address",
-      value:
-        "Priyadarshini vihar, Gair Vaishali, Bithoriya no.1, Kusumkhera, Haldwani",
-    },
-  ];
+  React.useEffect(() => {
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/gyms/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { id: getGymId },
+    })
+      .then((res) => {
+        console.log();
+        setData(res.data.output.length ? res.data.output[0] : {});
+        let temp = [];
+        if (res.data.output.length && res.data.output[0]) {
+          temp = [
+            ...temp,
+            ...[
+              {
+                key: "Name",
+                value: res.data.output[0].name,
+              },
+              {
+                key: "Address",
+                value: res.data.output[0].address
+                  ? res.data.output[0].address
+                  : "-",
+              },
+            ],
+          ];
+        }
+        setInfo(temp);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <Container maxWidth="xs">
-      <List dense className={classes.root}>
-        {info.map((value, index) => {
-          const labelId = `checkbox-list-secondary-label-${value}`;
-          return (
-            <div key={index}>
-              <ListItem button className={classes.listItem}>
-                <ListItemText id={labelId} primary={value.key} />
-                <ListItemSecondaryAction>
-                  <Typography
-                    variant="body2"
-                    align="right"
-                    className={classes.value}
-                  >
-                    {value.value}
-                  </Typography>
-                </ListItemSecondaryAction>
-              </ListItem>
-              {!(index >= info.length - 1) ? (
-                <Divider component="li"></Divider>
-              ) : null}
-            </div>
-          );
-        })}
-      </List>
-    </Container>
+    <>
+      <Title title={loading ? "Loading.." : data.name} edit={true} {...data} gym={true} />
+      <Container maxWidth="xs">
+        <List dense className={classes.root}>
+          {loading ? (
+            <Progress height="141px" />
+          ) : (
+            info &&
+            info.map((value, index) => {
+              const labelId = `checkbox-list-secondary-label-${value}`;
+              return (
+                <div key={index}>
+                  <ListItem button className={classes.listItem}>
+                    <ListItemText id={labelId} primary={value.key} />
+                    <ListItemSecondaryAction>
+                      <Typography
+                        variant="body2"
+                        align="right"
+                        className={classes.value}
+                      >
+                        {value.value}
+                      </Typography>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  {!(index >= info.length - 1) ? (
+                    <Divider component="li"></Divider>
+                  ) : null}
+                </div>
+              );
+            })
+          )}
+        </List>
+      </Container>
+    </>
   );
 }

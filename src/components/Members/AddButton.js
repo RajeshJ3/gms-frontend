@@ -45,45 +45,17 @@ function makeid(length) {
   return result;
 }
 
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+};
+
 export default function AddButton(props) {
   const classes = useStyles();
-
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState({});
-  const [success, setSuccess] = React.useState(true);
-  const [created, setCreated] = React.useState(false);
-  const [batch, setBatch] = React.useState("");
-  const [batches, setBatches] = React.useState([]);
-
-
+  const [state, setState] = React.useState(initialState);
   const [open, setOpen] = React.useState(false);
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-
-
-  // Batch
-  React.useEffect(() => {
-    axios({
-      method: "GET",
-      url: `${DOMAIN}/gyms/batches/`,
-      headers: { Authorization: `Token ${getToken}` },
-      params: { gym: getGymId },
-    })
-      .then((res) => {
-        let temp = res.data.output.map((i) => ({
-          value: i.id,
-          label: i.title,
-        }));
-        setBatches([{ value: -1, label: "Select.." }, ...temp]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err.request);
-        setLoading(false);
-      });
-  }, []);
-
+  const [loading, setLoading] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -92,31 +64,75 @@ export default function AddButton(props) {
     setOpen(false);
   };
 
-  const getOrCreateUser = (e) => {
-    e.preventDefault();
+  const stepThree = () => {
+    axios({
+      method: "POST",
+      url: `${DOMAIN}/members/`,
+      headers: { Authorization: `Token ${getToken}` },
+      data: {
+        name: state.firstName + " " + state.lastName,
+        gym: getGymId,
+        email: state.email,
+      },
+    })
+      .then((res) => {
+        console.log("[STEP 3] Member created");
+        window.location.replace(`/members/${res.data.output.id}`);
+      })
+      .catch((err) => {
+        console.log("[STEP 3] ERROR: member not created");
+        console.log(err.request);
+      });
+  };
+
+  const stepTwo = () => {
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/members/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { email: state.email, gym: getGymId },
+    })
+      .then((res) => {
+        // user exists for this gym id
+        if (res.data.output.length) {
+          console.warn("you have added this member");
+          window.location.replace(`/members/${res.data.output[0].user}`);
+        } else {
+          stepThree();
+        }
+      })
+      .catch((err) => {
+        // error
+        console.log(err.request);
+      });
+  };
+
+  const stepOne = () => {
+    setLoading(true);
     let pswd = makeid(10) + "@" + makeid(10);
     axios
       .post(`${DOMAIN}/auth/registration/`, {
-        first_name: firstName,
-        last_name: lastName,
-        email,
+        first_name: state.firstName,
+        last_name: state.lastName,
+        email: state.email,
         password1: pswd,
         password2: pswd,
         user_type: "member",
       })
       .then((res) => {
-        setCreated(true);
-        setSuccess(true);
-        setLoading(false);
+        // user created and member profile created
+        console.log("[STEP 1] User created");
+        window.location.replace(`/members/${res.data.id}`);
       })
       .catch((err) => {
+        console.log("[STEP 1] User already");
         let errorExist = JSON.parse(err.request.response);
-        setError(errorExist);
-        console.log(errorExist);
-        if (errorExist.email) {
-          setSuccess(true);
+        if (
+          errorExist.email[0] ===
+          "A user is already registered with this e-mail address."
+        ) {
+          stepTwo();
         }
-        setLoading(false);
       });
   };
 
@@ -136,19 +152,21 @@ export default function AddButton(props) {
             margin="dense"
             id="firstName"
             label="First Name"
+            required
             type="text"
             fullWidth
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={state.firstName}
+            onChange={(e) => setState({ ...state, firstName: e.target.value })}
           />
           <TextField
             margin="dense"
             id="lastName"
             label="Last Name"
+            required
             type="text"
             fullWidth
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={state.lastName}
+            onChange={(e) => setState({ ...state, lastName: e.target.value })}
           />
           <TextField
             margin="dense"
@@ -156,34 +174,16 @@ export default function AddButton(props) {
             label="Email Address"
             type="email"
             fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={state.email}
+            onChange={(e) => setState({ ...state, email: e.target.value })}
           />
-          <TextField
-            id="batch"
-            select
-            label="Batch"
-            value={batch}
-            fullWidth
-            margin="dense"
-            SelectProps={{
-              native: true,
-            }}
-            onChange={(e) => setBatch(e.target.value)}
-          >
-            {batches.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button color="primary" onClick={getOrCreateUser} disabled={loading}>
-            {loading ? "Creating" : "Next"}
+          <Button color="primary" onClick={stepOne} disabled={loading}>
+            {loading ? "Loading.." : "Submit"}
           </Button>
         </DialogActions>
       </Dialog>

@@ -18,15 +18,15 @@ export default function RecipeReviewCard(props) {
       <CardHeader
         action={
           <>
-            <IconButton aria-label="settings">
-              <EditBatch {...props} />
+            <IconButton size="small" aria-label="settings">
+              <EditBatch {...props} fontSize="small" />
             </IconButton>
-            <IconButton aria-label="add to favorites">
-            <DeleteBatch {...props} />
+            <IconButton size="small" aria-label="add to favorites">
+            <DeleteBatch {...props} fontSize="small" />
             </IconButton>
           </>
         }
-        title={props.title}
+        title={<span style={{ fontSize: '17px' }}>{props.title}</span>}
         className={classes.title}
       />
     </Card>

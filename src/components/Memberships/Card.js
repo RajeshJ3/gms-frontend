@@ -28,9 +28,10 @@ export default function RecipeReviewCard(props) {
             </IconButton>
           </>
         }
-        title={props.title}
+        title={<span style={{ fontSize: '17px' }}>{props.title}</span>}
         className={classes.title}
-        subheader={`Rs. ${props.amount}`}
+        subheader={
+          <span style={{ fontSize: '14px' }}>{`Rs. ${props.amount}`}</span>}
       />
     </Card>
   );

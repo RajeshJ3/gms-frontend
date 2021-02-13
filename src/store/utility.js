@@ -11,7 +11,7 @@ function get_domain() {
 export const getToken = localStorage.getItem("token");
 export const getUser = JSON.parse(localStorage.getItem('user'));
 
-export const getGymId = getUser.owner_profile.length ? getUser.owner_profile[0].gym : null
+export const getGymId = (getUser && getUser.owner_profile.length) ? getUser.owner_profile[0].gym : null
 
 export const DOMAIN = get_domain();
 export const SITE_URL = "https://www.99coupons.ml";

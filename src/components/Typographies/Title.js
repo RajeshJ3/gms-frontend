@@ -33,7 +33,7 @@ export default function Title(props) {
         ) : null}
         {props.title}
         {
-          props.edit ? props.gym ? (<EditGYM {...props} />) : (<EditButton />) : null
+          props.edit ? props.gym ? (<EditGYM {...props} />) : (<EditButton />) : props.action
         }
       </Typography>
     </>

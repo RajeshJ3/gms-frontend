@@ -51,9 +51,9 @@ export default function AddButton(props) {
   React.useEffect(() => {
     setName(props.name);
     setEmail(props.email);
-    setMobile(props.phone);
-    setBatch(props.batch_name);
-    setImage(props.image);
+    setMobile(props.phone ? props.phone : "-");
+    setBatch(props.batch_name ? props.batch_name : "-");
+    setImage(props.image ? props.image : "-");
   }, [props.name, props.email, props.phone, props.batch_name, props.image]);
 
   React.useEffect(() => {
@@ -135,8 +135,8 @@ export default function AddButton(props) {
               alt={name}
               src={
                 typeof image === "object"
-                  ? image.length && URL.createObjectURL(image[0])
-                  : image
+                  ? image && image.length && URL.createObjectURL(image[0])
+                  : typeof image === "string" ? image : ""
               }
             />
             <input

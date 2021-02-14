@@ -129,7 +129,7 @@ export default function Navigation(props) {
             component={Link}
             to="/dashboard"
           >
-            GMS
+            GYM Slate
           </Typography>
         </Toolbar>
       </AppBar>
@@ -172,12 +172,6 @@ export default function Navigation(props) {
         <List>
           {props.isAuthenticated ? (
             <>
-              <ListItem button component={Link} to="/settings" onClick={handleDrawerClose}>
-                <ListItemIcon>
-                  <Settings />
-                </ListItemIcon>
-                <ListItemText primary="Settings"/>
-              </ListItem>
               <ListItem button onClick={handleLogout}>
                 <ListItemIcon>
                   <ExitToApp />

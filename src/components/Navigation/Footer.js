@@ -1,6 +1,5 @@
 import { Container, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Instagram, LinkedIn, Twitter } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
 
@@ -50,28 +49,6 @@ export default function Footer() {
     <div className={classes.root}>
       <Container maxWidth="xs">
         <Grid item xs={12} className={classes.grid}>
-          <LinkedIn
-            className={classes.icon}
-            onClick={() =>
-              window.location.replace("https://www.linkedin.com/company/azuuk/")
-            }
-          />
-          <Instagram
-            className={classes.icon}
-            onClick={() =>
-              window.location.replace(
-                "https://www.instagram.com/azuuk.official/"
-              )
-            }
-          />
-          <Twitter
-            className={classes.icon}
-            onClick={() =>
-              window.location.replace("https://twitter.com/AzuukOfficial/")
-            }
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.grid}>
           <Link className={classes.link} to="/">
             Home
           </Link>
@@ -84,19 +61,10 @@ export default function Footer() {
             Register
           </Link>
         </Grid>
-        <Grid item xs={12} className={classes.grid}>
-          <Link className={classes.link} to="/term-of-use">
-            Term of Use
-          </Link>
-          |
-          <Link className={classes.link} to="/privacy-policy">
-            Privacy Policy
-          </Link>
-        </Grid>
         <Grid item xs={12} className={clsx(classes.grid, classes.link)}>
           &#169; {date.getFullYear()}{" "}
           <Link className={clsx(classes.link, classes.copyright)} to="/">
-            GMS
+            GYM Slate
           </Link>
         </Grid>
       </Container>

@@ -36,7 +36,7 @@ export default function EditGYM(props) {
 
   React.useEffect(() => {
     setName(props.name);
-    setAddress(props.address);
+    setAddress(props.address ? props.address : "");
   }, [props.name, props.address]);
 
   const handleClickOpen = () => {
@@ -90,7 +90,6 @@ export default function EditGYM(props) {
             label="Name"
             type="text"
             fullWidth
-            autoComplete={false}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -102,7 +101,6 @@ export default function EditGYM(props) {
             fullWidth
             multiline
             rows={3}
-            autoComplete={false}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
           />

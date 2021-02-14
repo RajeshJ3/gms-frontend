@@ -79,7 +79,7 @@ export default function MemberInfo(props) {
 
   return (
     <>
-      <Title title={loading ? "Loading.." : data.name} avatarUrl={data.image} edit={true} gym={false} {...data} />
+      <Title title={loading ? "Loading.." : data.name} avatarUrl={data.image ? data.image : ""} edit={true} gym={false} {...data} />
       <Container maxWidth="xs">
         <List dense className={classes.root}>
           {loading ? (

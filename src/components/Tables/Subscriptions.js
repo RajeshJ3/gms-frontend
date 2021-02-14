@@ -7,7 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { useTheme, useMediaQuery } from "@material-ui/core";
+import { useTheme, useMediaQuery, Typography } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -96,7 +96,7 @@ export default function StickyHeadTable(props) {
     axios({
       method: "GET",
       url: `${DOMAIN}/members/subscription/`,
-      params: {member: props.memberId},
+      params: { member: props.memberId },
       headers: { Authorization: `Token ${getToken}` },
     })
       .then((res) => {
@@ -149,7 +149,7 @@ export default function StickyHeadTable(props) {
                   <Progress height="100px" top="50%" />
                 </TableCell>
               </TableRow>
-            ) : (
+            ) : rows && rows.length ? (
               rows.map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={index}>
@@ -165,7 +165,11 @@ export default function StickyHeadTable(props) {
                             fontWeight: column.fontWeight,
                           }}
                         >
-                          <Link to={column.link ? `${column.link}/${row['id']}` : "#"}>
+                          <Link
+                            to={
+                              column.link ? `${column.link}/${row["id"]}` : "#"
+                            }
+                          >
                             {column.format && typeof value === "number"
                               ? column.format(value)
                               : value}
@@ -179,7 +183,9 @@ export default function StickyHeadTable(props) {
                         >
                           <Avatar
                             component={column.component}
-                            to={column.link ? `${column.link}/${row['id']}` : "#"}
+                            to={
+                              column.link ? `${column.link}/${row["id"]}` : "#"
+                            }
                             alt={row["name"]}
                             src={row[column.id]}
                           />
@@ -189,6 +195,12 @@ export default function StickyHeadTable(props) {
                   </TableRow>
                 );
               })
+            ) : (
+              <TableRow hover role="checkbox">
+                <TableCell colSpan={props.memberId ? 4 : 6}>
+                  <Typography align="center">No data found.</Typography>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>

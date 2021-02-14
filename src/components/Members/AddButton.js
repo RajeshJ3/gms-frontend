@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     [theme.breakpoints.down("sm")]: {
-      marginTop: "22px",
+      marginTop: "2px",
     },
   },
   dialog: {
@@ -34,21 +34,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 const initialState = {
-  firstName: "",
-  lastName: "",
+  name: "",
   email: "",
+  phone: "",
 };
 
 export default function AddButton(props) {
@@ -56,6 +45,35 @@ export default function AddButton(props) {
   const [state, setState] = React.useState(initialState);
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [batch, setBatch] = React.useState("");
+  const [batches, setBatches] = React.useState([]);
+
+  React.useEffect(() => {
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/gyms/batches/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { gym: getGymId },
+    })
+      .then((res) => {
+        setBatches([
+          {
+            value: -1,
+            label: "Select..",
+          },
+          ...res.data.output.map((i) => ({
+            value: i.id,
+            label: i.title,
+          })),
+        ]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -64,28 +82,33 @@ export default function AddButton(props) {
     setOpen(false);
   };
 
-  const stepThree = () => {
+  const stepTwo = () => {
     axios({
       method: "POST",
       url: `${DOMAIN}/members/`,
       headers: { Authorization: `Token ${getToken}` },
       data: {
-        name: state.firstName + " " + state.lastName,
-        gym: getGymId,
+        name: state.name,
         email: state.email,
+        gym: getGymId,
+        phone: state.phone ? state.phone : null,
+        batch: batch,
       },
     })
       .then((res) => {
-        console.log("[STEP 3] Member created");
-        window.location.replace(`/members/${res.data.output.id}`);
+        console.log("[STEP 2] Member created");
+        window.location.replace(`/members/${res.data.instance.id}`);
       })
       .catch((err) => {
-        console.log("[STEP 3] ERROR: member not created");
+        setLoading(false);
+        console.log("[STEP 2] ERROR: member not created");
         console.log(err.request);
       });
   };
 
-  const stepTwo = () => {
+  const stepOne = (e) => {
+    e.preventDefault();
+    setLoading(true);
     axios({
       method: "GET",
       url: `${DOMAIN}/members/`,
@@ -93,46 +116,17 @@ export default function AddButton(props) {
       params: { email: state.email, gym: getGymId },
     })
       .then((res) => {
-        // user exists for this gym id
         if (res.data.output.length) {
-          console.warn("you have added this member");
-          window.location.replace(`/members/${res.data.output[0].user}`);
+          window.location.replace(`/members/${res.data.output[0].id}`);
+          console.log("[Step 1] Already");
         } else {
-          stepThree();
-        }
-      })
-      .catch((err) => {
-        // error
-        console.log(err.request);
-      });
-  };
-
-  const stepOne = () => {
-    setLoading(true);
-    let pswd = makeid(10) + "@" + makeid(10);
-    axios
-      .post(`${DOMAIN}/auth/registration/`, {
-        first_name: state.firstName,
-        last_name: state.lastName,
-        email: state.email,
-        password1: pswd,
-        password2: pswd,
-        user_type: "member",
-      })
-      .then((res) => {
-        // user created and member profile created
-        console.log("[STEP 1] User created");
-        window.location.replace(`/members/${res.data.id}`);
-      })
-      .catch((err) => {
-        console.log("[STEP 1] User already");
-        let errorExist = JSON.parse(err.request.response);
-        if (
-          errorExist.email[0] ===
-          "A user is already registered with this e-mail address."
-        ) {
+          console.log("[Step 1] Not Found, Creating");
           stepTwo();
         }
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err.request);
       });
   };
 
@@ -147,45 +141,67 @@ export default function AddButton(props) {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Add member</DialogTitle>
-        <DialogContent className={classes.dialog}>
-          <TextField
-            margin="dense"
-            id="firstName"
-            label="First Name"
-            required
-            type="text"
-            fullWidth
-            value={state.firstName}
-            onChange={(e) => setState({ ...state, firstName: e.target.value })}
-          />
-          <TextField
-            margin="dense"
-            id="lastName"
-            label="Last Name"
-            required
-            type="text"
-            fullWidth
-            value={state.lastName}
-            onChange={(e) => setState({ ...state, lastName: e.target.value })}
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            value={state.email}
-            onChange={(e) => setState({ ...state, email: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button color="primary" onClick={stepOne} disabled={loading}>
-            {loading ? "Loading.." : "Submit"}
-          </Button>
-        </DialogActions>
+        <form autoComplete="off" onSubmit={stepOne}>
+          <DialogContent className={classes.dialog}>
+            <TextField
+              margin="dense"
+              id="name"
+              label="Name"
+              required
+              type="text"
+              fullWidth
+              value={state.name}
+              onChange={(e) => setState({ ...state, name: e.target.value })}
+            />
+            <TextField
+              margin="dense"
+              id="phone"
+              label="Mobile"
+              required
+              type="tel"
+              fullWidth
+              value={state.phone}
+              onChange={(e) => setState({ ...state, phone: e.target.value })}
+            />
+            <TextField
+              margin="dense"
+              id="email"
+              label="Email Address"
+              type="email"
+              fullWidth
+              required
+              value={state.email}
+              onChange={(e) => setState({ ...state, email: e.target.value })}
+            />
+            <TextField
+              id="batch"
+              select
+              label="Batch"
+              value={batch}
+              fullWidth
+              required
+              margin="dense"
+              SelectProps={{
+                native: true,
+              }}
+              onChange={(e) => setBatch(e.target.value)}
+            >
+              {batches.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button color="primary" type="submit" disabled={loading}>
+              {loading ? "Loading.." : "Submit"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );

@@ -30,20 +30,20 @@ export default function Features() {
       <Container className={classes.root} maxWidth="xl">
         <Box pt={2} pb={1.5} textAlign="center">
           <Typography variant="h6" component="h2" gutterBottom={true}>
-            Get 2 Months <b>FREE</b>!
+            Start with <b>FREE</b> plan!
           </Typography>
           <Typography
             variant="body2"
             color="textSecondary"
             className={classes.description}
           >
-            First 100 GYMs will get 2 months of free premium.
+            First 100 GYMs will get free premium for 1st year.
             {" "}<b>
               <u>
                 <a href="/signup">Register Now</a>
               </u>
             </b>,{" "}
-            92 already joined.
+            91 already joined.
           </Typography>
         </Box>
       </Container>

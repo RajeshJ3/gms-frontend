@@ -23,7 +23,7 @@ export default function Title(props) {
   return (
     <>
       <Typography className={classes.root} variant="h5">
-        {props.avatarUrl ? (
+        {props.avatarUrl || props.avatarUrl === "" ? (
           <Avatar
             alt={classes.name}
             className={classes.avatar}

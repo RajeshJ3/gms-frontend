@@ -6,9 +6,9 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Avatar from "@material-ui/core/Avatar";
+import { DOMAIN, getToken, getGymId } from "../../store/utility";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     [theme.breakpoints.down("sm")]: {
-      marginTop: "22px",
+      marginTop: "18px",
       marginBottom: "25px",
     },
   },
@@ -37,12 +37,102 @@ export default function AddButton(props) {
   const classes = useStyles();
 
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [member, setMember] = React.useState("");
+  const [members, setMembers] = React.useState([]);
   const [batch, setBatch] = React.useState("");
-  const [member, setMember] = React.useState();
+  const [batches, setBatches] = React.useState([]);
   const [membership, setMembership] = React.useState();
+  const [memberships, setMemberships] = React.useState([]);
   const [subscriptionFrom, setSubscriptionFrom] = React.useState();
   const [subscriptionTill, setSubscriptionTill] = React.useState();
   const [amount, setAmount] = React.useState();
+
+  React.useEffect(() => {
+    setLoading(true);
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/gyms/batches/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { gym: getGymId },
+    })
+      .then((res) => {
+        setBatches([
+          {
+            value: -1,
+            label: "Select..",
+          },
+          ...res.data.output.map((i) => ({
+            value: i.id,
+            label: i.title,
+          })),
+        ]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
+
+  React.useEffect(() => {
+    setLoading(true);
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/members/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { gym: getGymId },
+    })
+      .then((res) => {
+        setMembers([
+          {
+            value: -1,
+            label: "Select..",
+            image: "",
+          },
+          ...res.data.output.map((i) => ({
+            value: i.id,
+            label: i.name,
+            image: i.image,
+          })),
+        ]);
+        setLoading(false);
+        if (props.memberId) {
+          setMember(props.memberId);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, [props.memberId]);
+
+  React.useEffect(() => {
+    setLoading(true);
+    axios({
+      method: "GET",
+      url: `${DOMAIN}/gyms/memberships/`,
+      headers: { Authorization: `Token ${getToken}` },
+      params: { gym: getGymId },
+    })
+      .then((res) => {
+        setMemberships([
+          {
+            value: -1,
+            label: "Select..",
+          },
+          ...res.data.output.map((i) => ({
+            value: i.id,
+            label: i.title,
+          })),
+        ]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -52,58 +142,30 @@ export default function AddButton(props) {
     setOpen(false);
   };
 
-  const members = [
-    {
-      value: 1,
-      label: "Ankit Brijwasi",
-    },
-    {
-      value: 2,
-      label: "Rajesh Joshi",
-    },
-    {
-      value: 3,
-      label: "Navdeep",
-    },
-  ];
-  const memberships = [
-    {
-      value: 1,
-      label: "Bronze",
-    },
-    {
-      value: 2,
-      label: "Silver",
-    },
-    {
-      value: 3,
-      label: "Sold",
-    },
-    {
-      value: 4,
-      label: "Platinum",
-    },
-
-    {
-      value: 5,
-      label: "Diamond",
-    },
-  ];
-
-  const batches = [
-    {
-      value: "morning",
-      label: "Morning",
-    },
-    {
-      value: "noon",
-      label: "Noon",
-    },
-    {
-      value: "evening",
-      label: "Evening",
-    },
-  ];
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    axios({
+      method: "POST",
+      url: `${DOMAIN}/members/subscription/`,
+      headers: { Authorization: `Token ${getToken}` },
+      data: {
+        member: member,
+        batch: batch,
+        membership: membership,
+        amount: amount ? amount || amount === 0 : null,
+        valid_from: subscriptionFrom,
+        valid_till: subscriptionTill,
+      },
+    })
+      .then((res) => {
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log(JSON.parse(err.request.response));
+        setLoading(false);
+      });
+  };
 
   return (
     <div className={classes.root}>
@@ -124,39 +186,34 @@ export default function AddButton(props) {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Update Subscription</DialogTitle>
-        <DialogContent className={classes.dialog}>
-          <form noValidate autoComplete="off">
-            {member ? (
-              <center>
-                <Avatar
-                  style={{ marginBottom: member ? "10px" : 0 }}
-                  alt="Rajesh"
-                  src="https://material-ui.com/static/images/avatar/2.jpg"
-                />
-              </center>
-            ) : null}
-            <Autocomplete
-              freeSolo
+        <form autoComplete="off" onSubmit={handleSubmit}>
+          <DialogContent className={classes.dialog}>
+            <TextField
               id="member"
-              disableClearable
-              options={members.map((option) => option.label)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Member"
-                  margin="dense"
-                  value={member}
-                  onChange={(e) => setMember(e.target.value)}
-                  InputProps={{ ...params.InputProps, type: "search" }}
-                />
-              )}
-            />
+              select
+              label="Member"
+              value={member}
+              fullWidth
+              required
+              margin="dense"
+              SelectProps={{
+                native: true,
+              }}
+              onChange={(e) => setMember(e.target.value)}
+            >
+              {members.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
             <TextField
               id="batch"
               select
               label="Batch"
               value={batch}
               fullWidth
+              required
               margin="dense"
               SelectProps={{
                 native: true,
@@ -175,6 +232,7 @@ export default function AddButton(props) {
               label="Membership"
               value={membership}
               fullWidth
+              required
               margin="dense"
               SelectProps={{
                 native: true,
@@ -190,7 +248,7 @@ export default function AddButton(props) {
             <TextField
               margin="dense"
               id="amount"
-              label="Amount"
+              label="Amount (optional)"
               type="number"
               style={{ marginTop: 0 }}
               fullWidth
@@ -202,6 +260,7 @@ export default function AddButton(props) {
               label="Subscription From"
               type="date"
               fullWidth
+              required
               value={subscriptionFrom}
               onChange={(e) => setSubscriptionFrom(e.target.value)}
               className={classes.date}
@@ -214,6 +273,7 @@ export default function AddButton(props) {
               label="Subscription Till"
               type="date"
               fullWidth
+              required
               className={classes.date}
               value={subscriptionTill}
               onChange={(e) => setSubscriptionTill(e.target.value)}
@@ -221,14 +281,16 @@ export default function AddButton(props) {
                 shrink: true,
               }}
             />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button color="primary">Save</Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button color="primary" type="submit" disabled={loading}>
+              {loading ? "Saving.." : "Save"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );

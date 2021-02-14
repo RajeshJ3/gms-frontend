@@ -7,7 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { useTheme, useMediaQuery } from "@material-ui/core";
+import { useTheme, useMediaQuery, Typography } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import { Link } from "react-router-dom";
 import { Cancel, CheckCircle } from "@material-ui/icons";
@@ -129,7 +129,7 @@ export default function StickyHeadTable(props) {
               i.image,
               i.name,
               i.batch_title,
-              i.subscribed,
+              i.subscribed ? i.subscribed : false,
               i.joined_date
             )
           );
@@ -169,7 +169,7 @@ export default function StickyHeadTable(props) {
                 </TableCell>
               </TableRow>
             ) : (
-              rows.map((row, index) => {
+              rows && rows.length ? rows.map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                     {columns.map((column) => {
@@ -215,7 +215,13 @@ export default function StickyHeadTable(props) {
                     })}
                   </TableRow>
                 );
-              })
+              }) : (
+                <TableRow hover role="checkbox">
+                <TableCell colSpan={5}>
+                  <Typography align="center">No data found.</Typography>
+                </TableCell>
+              </TableRow>
+              )
             )}
           </TableBody>
         </Table>

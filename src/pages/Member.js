@@ -10,7 +10,7 @@ export default function Index(props) {
     <>
       <MemberInfo {...props} />
       <Divider />
-      <AddButton title="Add Subscription" />
+      <AddButton title="Add Subscription" memberId={props.match.params.id} />
       <Divider />
       <Title title="Recent Subscriptions" />
       <Subscriptions memberId={props.match.params.id} type="one-member" />

@@ -28,8 +28,7 @@ const useStyles = makeStyles((theme) => ({
   edit: {
     cursor: "pointer",
     fontSize: "20px",
-    marginLeft: "12px",
-    bottom: "0px",
+    marginLeft: "2px",
   },
   input: {
     display: "none",
@@ -52,7 +51,6 @@ export default function AddButton(props) {
     setName(props.name);
     setEmail(props.email);
     setMobile(props.phone ? props.phone : "-");
-    setBatch(props.batch_name ? props.batch_name : "-");
     setImage(props.image ? props.image : "-");
   }, [props.name, props.email, props.phone, props.batch_name, props.image]);
 
@@ -64,11 +62,12 @@ export default function AddButton(props) {
       params: { gym: getGymId },
     })
       .then((res) => {
-        let temp = res.data.output.map((i) => ({
-          value: i.id,
-          label: i.title,
-        }));
-        setBatches([{ value: -1, label: "Select.." }, ...temp]);
+        setBatches(
+          res.data.output.map((i) => ({
+            value: i.id,
+            label: i.title,
+          }))
+        );
         setLoading(false);
       })
       .catch((err) => {
@@ -87,16 +86,15 @@ export default function AddButton(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     let formData = new FormData();
     if (typeof image === "object") {
       formData.append("image", image[0]);
     }
+    formData.append("batch", batch);
     formData.append("name", name);
     formData.append("email", email);
     formData.append("phone", mobile);
-    if (typeof batch === "number") {
-      formData.append("batch", batch);
-    }
     axios
       .patch(`${DOMAIN}/members/`, formData, {
         headers: {
@@ -129,90 +127,94 @@ export default function AddButton(props) {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Edit member profile</DialogTitle>
-        <DialogContent className={classes.dialog}>
-          <div className={classes.imageWrapper}>
-            <Avatar
-              alt={name}
-              src={
-                typeof image === "object"
-                  ? image && image.length && URL.createObjectURL(image[0])
-                  : typeof image === "string" ? image : ""
-              }
+        <form autoComplete="off" onSubmit={handleSubmit}>
+          <DialogContent className={classes.dialog}>
+            <div className={classes.imageWrapper}>
+              <Avatar
+                alt={name}
+                src={
+                  typeof image === "object"
+                    ? image && image.length && URL.createObjectURL(image[0])
+                    : typeof image === "string"
+                    ? image
+                    : ""
+                }
+              />
+              <input
+                accept="image/*"
+                className={classes.input}
+                id="contained-button-file"
+                multiple
+                type="file"
+                onChange={(e) => setImage(e.target.files)}
+              />
+              <label htmlFor="contained-button-file">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  component="span"
+                >
+                  Upload
+                </Button>
+              </label>
+            </div>
+            <TextField
+              margin="dense"
+              id="name"
+              label="Name"
+              type="text"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
-            <input
-              accept="image/*"
-              className={classes.input}
-              id="contained-button-file"
-              multiple
-              type="file"
-              onChange={(e) => setImage(e.target.files)}
+            <TextField
+              margin="dense"
+              id="email"
+              label="Email Address"
+              type="email"
+              fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <label htmlFor="contained-button-file">
-              <Button
-                variant="outlined"
-                size="small"
-                color="primary"
-                component="span"
-              >
-                Upload
-              </Button>
-            </label>
-          </div>
-
-          <TextField
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="mobile"
-            label="Mobile"
-            type="number"
-            fullWidth
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-          />
-          <TextField
-            id="batch"
-            select
-            label="Batch"
-            value={batch}
-            fullWidth
-            margin="dense"
-            SelectProps={{
-              native: true,
-            }}
-            onChange={(e) => setBatch(e.target.value)}
-          >
-            {batches.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button color="primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? "Saving" : "Save"}
-          </Button>
-        </DialogActions>
+            <TextField
+              margin="dense"
+              id="mobile"
+              label="Mobile"
+              type="number"
+              fullWidth
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+            <TextField
+              id="batch"
+              select
+              label="Batch"
+              fullWidth
+              required
+              margin="dense"
+              SelectProps={{
+                native: true,
+              }}
+              value={batch}
+              onChange={(e) => setBatch(e.target.value)}
+            >
+              {batches.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button color="primary" type="submit" disabled={loading}>
+              {loading ? "Saving" : "Save"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </>
   );
